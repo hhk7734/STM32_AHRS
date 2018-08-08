@@ -40,4 +40,6 @@
     #endif
 #endif
 
+#define ALWAYS_POWERUP
+
 #endif // __RF24_STM_CONFIG_H__

@@ -548,6 +548,10 @@ void RF24::begin(void)
 // Flush buffers
     flush_rx();
     flush_tx();
+
+#ifdef ALWAYS_POWERUP
+    powerUp();
+#endif
 }
 
 /****************************************************************************/
@@ -655,9 +659,10 @@ bool RF24::write( const void* buf, uint8_t len )
 
     // Yay, we are done.
 
+#ifndef ALWAYS_POWERUP
     // Power down
     powerDown();
-
+#endif
     // Flush buffers (Is this a relic of past experimentation, and not needed anymore??)
     flush_tx();
 
@@ -667,10 +672,11 @@ bool RF24::write( const void* buf, uint8_t len )
 
 void RF24::startWrite( const void* buf, uint8_t len )
 {
+#ifndef ALWAYS_POWERUP
     // Transmitter power-up
     write_register(NRF_CONFIG, ( read_register(NRF_CONFIG) | _BV(NRF_PWR_UP) ) & ~_BV(NRF_PRIM_RX) );
     delayMicroseconds(150);
-
+#endif
     // Send the payload
     write_payload( buf, len );
 
