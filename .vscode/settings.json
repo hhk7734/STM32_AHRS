@@ -2,8 +2,5 @@
     "terminal.integrated.env.linux": {
         "PATH": "/home/hhk7734/.platformio/penv/bin:/home/hhk7734/.platformio/penv:/home/hhk7734/bin:/home/hhk7734/.local/bin:/home/hhk7734/bin:/home/hhk7734/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
         "PLATFORMIO_CALLER": "vscode"
-    },
-    "files.associations": {
-        "cmath": "cpp"
     }
 }
