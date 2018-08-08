@@ -37,6 +37,7 @@ public :
     void get_acc(int16_t *xyz);
     void get_gyro(int16_t *xyz);
     void get_mag(int16_t *xyz);
+    void get_all(int16_t *acc_xyz, int16_t *gyro_xyz, int16_t *mag_xyz);
 protected :
 
 private :

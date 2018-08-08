@@ -406,6 +406,31 @@ void MPU9250_::get_mag(int16_t *xyz)
         xyz[i] = ((int32_t)(xyz[i] - mag_offset[i])*mag_sensitivity[i])>>5;
     }
 }
+
+void MPU9250_::get_all(int16_t *acc_xyz, int16_t *gyro_xyz, int16_t *mag_xyz)
+{
+    Wire.beginTransmission(MPU9250_ADDRESS);
+    Wire.write(MPU9250_ACCEL_XOUT_H);
+    Wire.endTransmission(false);
+    Wire.requestFrom(MPU9250_ADDRESS, 14);
+    acc_xyz[0] = (Wire.read() << 8) | Wire.read();
+    acc_xyz[1] = (Wire.read() << 8) | Wire.read();
+    acc_xyz[2] = (Wire.read() << 8) | Wire.read();
+    Wire.read();Wire.read(); // temperature
+    gyro_xyz[0] = (Wire.read() << 8) | Wire.read();
+    gyro_xyz[1] = (Wire.read() << 8) | Wire.read();
+    gyro_xyz[2] = (Wire.read() << 8) | Wire.read();
+    mag_xyz[0] = (Wire.read() << 8) | Wire.read();
+    mag_xyz[1] = (Wire.read() << 8) | Wire.read();
+    mag_xyz[2] = -((Wire.read() << 8) | Wire.read());
+
+    for (uint8_t i = 0; i < 3; ++i)
+    {
+        acc_xyz[i] -= acc_offset[i];
+        gyro_xyz[i] -= gyro_offset[i];
+        mag_xyz[i] = ((int32_t)(mag_xyz[i] - mag_offset[i])*mag_sensitivity[i])>>5;
+    }
+}
 //
 // Private
 //
