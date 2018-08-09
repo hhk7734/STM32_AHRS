@@ -1,18 +1,18 @@
 #include <Arduino.h>
-#include <EEPROM.h>
 
 #include "config.h"
 #include "MPU9250.h"
 #include "EKF.h"
 #include "RF24_STM.h"
+#include "AT24C.h"
 
 RF24 radio(BOARD_NRF24_CE_PIN,BOARD_SPI2_NSS_PIN);
-
-const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 
 MPU9250_ mpu;
 
 EKF_ ekf;
+
+AT24C_ eep;
 
 void setup()
 {
@@ -28,42 +28,15 @@ void setup()
 
     mpu.setup();
 
-    // for (uint8_t i = 0; i < 3; ++i)
-    // {
-    //     temp1[i] = (int16_t)EEPROM.read(EEPROM_ACC_OFF_X + i);
-    // }
-    // mpu.set_acc_offset(temp1);
-
-    // for (uint8_t i = 0; i < 3; ++i)
-    // {
-    //     temp1[i] = (int16_t)EEPROM.read(EEPROM_GYRO_OFF_X + i);
-    // }
-    // mpu.set_gyro_offset(temp1);
-        
-    // for (uint8_t i = 0; i < 3; ++i)
-    // {
-    //     temp1[i] = (int16_t)EEPROM.read(EEPROM_MAG_OFF_X + i);
-    //     temp2[i] = (int16_t)EEPROM.read(EEPROM_MAG_SEN_X + i);
-    // }
-    // mpu.set_mag_offset(temp1, temp2);
-
-    temp1[0] = -136;
-    temp1[1] = 115;
-    temp1[2] = -50;
+    eep.read_i16A3(EEPROM_ACC_OFF_X, temp1);
     mpu.set_acc_offset(temp1);
 
-    temp1[0] = 26;
-    temp1[1] = 5;
-    temp1[2] = 8;
+    eep.read_i16A3(EEPROM_GYRO_OFF_X, temp1);
     mpu.set_gyro_offset(temp1);
-
-    temp1[0] = 442;
-    temp1[1] = 52;
-    temp1[2] = -35;
-    temp2[0] = 32;
-    temp2[1] = 31;
-    temp2[2] = 30;
-    mpu.set_mag_offset(temp1,temp2);
+        
+    eep.read_i16A3(EEPROM_MAG_OFF_X, temp1);
+    eep.read_i16A3(EEPROM_MAG_SEN_X, temp2);
+    mpu.set_mag_offset(temp1, temp2);
 
     Serial1.println("are you ready?");
     Serial1.println("1 : ACC_CALIBRATION");
@@ -80,10 +53,8 @@ void setup()
         case ACC_CALIBRATION:
             mpu.acc_calibration();
             mpu.get_acc_offset(temp1);
-            for (uint8_t i = 0; i < 3; ++i)
-            {
-                EEPROM.write(EEPROM_ACC_OFF_X + i,(uint16_t)temp1[i]);
-            }
+            eep.write_i16A3(EEPROM_ACC_OFF_X,temp1);
+            eep.read_i16A3(EEPROM_ACC_OFF_X,temp1);
             Serial1.print(temp1[0]);Serial1.print(',');
             Serial1.print(temp1[1]);Serial1.print(',');
             Serial1.println(temp1[2]);
@@ -93,10 +64,8 @@ void setup()
         case GYRO_CALIBRATION:
             mpu.gyro_calibration();
             mpu.get_gyro_offset(temp1);
-            for (uint8_t i = 0; i < 3; ++i)
-            {
-                EEPROM.write(EEPROM_GYRO_OFF_X + i,(uint16_t)temp1[i]);
-            }
+            eep.write_i16A3(EEPROM_GYRO_OFF_X,temp1);
+            eep.read_i16A3(EEPROM_GYRO_OFF_X,temp1);
             Serial1.print(temp1[0]);Serial1.print(',');
             Serial1.print(temp1[1]);Serial1.print(',');
             Serial1.println(temp1[2]);
@@ -106,11 +75,10 @@ void setup()
         case MAG_CALIBRATION:
             mpu.mag_calibration();
             mpu.get_mag_offset(temp1, temp2);
-            for (uint8_t i = 0; i < 3; ++i)
-            {
-                EEPROM.write(EEPROM_MAG_OFF_X + i,(uint16_t)temp1[i]);
-                EEPROM.write(EEPROM_MAG_SEN_X + i,(uint16_t)temp2[i]);
-            }
+            eep.write_i16A3(EEPROM_MAG_OFF_X,temp1);
+            eep.write_i16A3(EEPROM_MAG_SEN_X,temp2);
+            eep.read_i16A3(EEPROM_MAG_OFF_X,temp1);
+            eep.read_i16A3(EEPROM_MAG_SEN_X,temp2);
             Serial1.print(temp1[0]);Serial1.print(',');
             Serial1.print(temp1[1]);Serial1.print(',');
             Serial1.println(temp1[2]);
@@ -131,7 +99,6 @@ void setup()
     radio.begin();
 
     radio.openWritingPipe(NRF_ADDRESS_01);
-    radio.openReadingPipe(1,NRF_ADDRESS_02);
     radio.stopListening();
 }
 
@@ -141,6 +108,7 @@ void loop()
     EKF_ ekf;
 
     uint32_t old_time,new_time,delta_time;
+    old_time = micros();
 
     int16_t gyro[3], acc[3], mag[3];
     float uacc[3], umag[3];
