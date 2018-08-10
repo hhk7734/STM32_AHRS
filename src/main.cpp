@@ -47,8 +47,10 @@ void setup()
     Serial1.flush();
     while((!Serial1.available()) && (millis() - st_time < 3000)){}
     digitalWrite(LED_BUILTIN, LOW);
-    
-    switch(Serial1.read())
+    int8_t status = Serial1.read();
+    Serial1.println(status);
+
+    switch(status)
     {
         case ACC_CALIBRATION:
             mpu.acc_calibration();
@@ -98,15 +100,14 @@ void setup()
 ////////////////////////////////////////////////////////////////////////////////
     radio.begin();
 
-    radio.openWritingPipe(NRF_ADDRESS_01);
+    radio.openWritingPipe(SYSTEM_NRF_ADDRESS);
     radio.stopListening();
+
+    Serial1.println("start");
 }
 
 void loop()
 {
-
-    EKF_ ekf;
-
     uint32_t old_time,new_time,delta_time;
     old_time = micros();
 
@@ -159,14 +160,14 @@ void loop()
         
         ekf.get_quat(q);
         
-        int16_t data[5];
+        int16_t data[6];
 
         data[0] = q[0]*10000;
         data[1] = q[1]*10000;
         data[2] = q[2]*10000;
         data[3] = q[3]*10000;
-
         data[4] = (uint16_t)(delta_time/100);
-        radio.write(data, 10);
+        data[5] = SYSTEM_NUMBER;
+        radio.write(data, 12);
     }
 }
