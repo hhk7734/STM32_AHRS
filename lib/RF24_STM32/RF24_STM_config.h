@@ -20,7 +20,7 @@
 #define _BV(bit) (1 << (bit))
 #undef PSTR
 #define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
-#define pgm_read_word(p) (*(p))
+// #define pgm_read_word(p) (*(p))
 
 #undef SERIAL_DEBUG
 // #define SERIAL_DEBUG
@@ -41,5 +41,8 @@
 #endif
 
 // #define ALWAYS_POWERUP
+
+#define POLLING_WRITE
+#define POLLING_WRITE_DELAY 2000 // us
 
 #endif // __RF24_STM_CONFIG_H__

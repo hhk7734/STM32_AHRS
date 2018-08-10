@@ -604,10 +604,16 @@ void RF24::powerUp(void)
 bool RF24::write( const void* buf, uint8_t len )
 {
     bool result = false;
-
+#ifdef POLLING_WRITE
+    if(write_step == 0)
+    {
+#endif
     // Begin the write
     startWrite(buf,len);
-
+#ifdef POLLING_WRITE
+        write_step = 1;
+    }
+#endif
     // ------------
     // At this point we could return from a non-blocking write, and then call
     // the rest after an interrupt
@@ -621,6 +627,28 @@ bool RF24::write( const void* buf, uint8_t len )
     // Monitor the send
     uint8_t observe_tx;
     uint8_t status;
+#ifdef POLLING_WRITE
+    uint32_t sent_at = micros();
+    if(write_step == 1)
+    {
+        const uint32_t timeout = POLLING_WRITE_DELAY; //us to wait for timeout
+        do
+        {
+            status = read_register(NRF_OBSERVE_TX,&observe_tx,1);
+            IF_SERIAL_DEBUG(Serial1.print(observe_tx,HEX));
+            if(status & ( _BV(NRF_TX_DS) | _BV(NRF_MAX_RT) ))
+            {
+                write_step = 2;
+            }
+        }
+        while(( write_step != 2 ) && ( micros() - sent_at < timeout ));
+        if( write_step != 2)
+        {
+            return false;
+        }
+    }
+        
+#else
     uint32_t sent_at = millis();
     const uint32_t timeout = 500; //ms to wait for timeout
     do
@@ -629,7 +657,7 @@ bool RF24::write( const void* buf, uint8_t len )
         IF_SERIAL_DEBUG(Serial1.print(observe_tx,HEX));
     }
     while( ! ( status & ( _BV(NRF_TX_DS) | _BV(NRF_MAX_RT) ) ) && ( millis() - sent_at < timeout ) );
-
+#endif
     // The part above is what you could recreate with your own interrupt handler,
     // and then call this when you got an interrupt
     // ------------
@@ -665,7 +693,9 @@ bool RF24::write( const void* buf, uint8_t len )
 #endif
     // Flush buffers (Is this a relic of past experimentation, and not needed anymore??)
     flush_tx();
-
+#ifdef POLLING_WRITE
+    write_step = 0;
+#endif
     return result;
 }
 /****************************************************************************/

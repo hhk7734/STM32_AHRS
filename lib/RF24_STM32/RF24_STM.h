@@ -57,6 +57,10 @@ private:
   uint8_t ack_payload_length; /**< Dynamic size of pending ack payload. */
   uint64_t pipe0_reading_address; /**< Last address set on pipe 0 for reading. */
 
+#ifdef POLLING_WRITE
+    uint8_t write_step;
+#endif
+
 protected:
   /**
    * @name Low-level internal interface.
