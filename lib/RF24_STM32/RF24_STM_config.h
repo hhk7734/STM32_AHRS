@@ -43,6 +43,6 @@
 // #define ALWAYS_POWERUP
 
 #define POLLING_WRITE
-#define POLLING_WRITE_DELAY 2000 // us
+#define POLLING_WRITE_DELAY 3000 // us
 
 #endif // __RF24_STM_CONFIG_H__
