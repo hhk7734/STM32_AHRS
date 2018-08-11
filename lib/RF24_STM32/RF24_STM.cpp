@@ -515,7 +515,7 @@ void RF24::begin(void)
     setRetries(4,15);
 
 // Restore our default PA level
-    setPALevel( RF24_PA_MAX ) ;
+    setPALevel( DEFAULT_PA_LEVEL ) ;
 
 // Determine if this is a p or non-p RF24 module and then
 // reset our data rate back to default value. This works
@@ -528,7 +528,7 @@ void RF24::begin(void)
 
 // Then set the data rate to the slowest (and most reliable) speed supported by all
 // hardware.
-    setDataRate( RF24_1MBPS ) ;
+    setDataRate( DEFAULT_DATA_RATE ) ;
 
 // Initialize CRC and request 2-byte (16bit) CRC
     setCRCLength( RF24_CRC_16 ) ;
