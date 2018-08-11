@@ -22,7 +22,7 @@ void setup()
     digitalWrite(LED_BUILTIN, HIGH);
 
     Serial1.begin(115200);
-
+    Serial1.println("begin");
 // MPU
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -99,7 +99,7 @@ void setup()
 // NRF24
 ////////////////////////////////////////////////////////////////////////////////
     radio.begin();
-
+    radio.setChannel(NRF_CHANNEL);
     radio.openWritingPipe(SYSTEM_NRF_ADDRESS);
     radio.stopListening();
 
