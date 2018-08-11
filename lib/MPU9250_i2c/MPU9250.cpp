@@ -412,7 +412,7 @@ void MPU9250_::get_all(int16_t *acc_xyz, int16_t *gyro_xyz, int16_t *mag_xyz)
     Wire.beginTransmission(MPU9250_ADDRESS);
     Wire.write(MPU9250_ACCEL_XOUT_H);
     Wire.endTransmission(false);
-    Wire.requestFrom(MPU9250_ADDRESS, 14);
+    Wire.requestFrom(MPU9250_ADDRESS, 20);
     acc_xyz[0] = (Wire.read() << 8) | Wire.read();
     acc_xyz[1] = (Wire.read() << 8) | Wire.read();
     acc_xyz[2] = (Wire.read() << 8) | Wire.read();
