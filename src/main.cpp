@@ -99,7 +99,7 @@ void setup()
 // NRF24
 ////////////////////////////////////////////////////////////////////////////////
     radio.begin();
-    radio.setChannel(NRF_CHANNEL);
+    radio.setChannel(SYSTEM_NRF_CHANNEL);
     radio.openWritingPipe(SYSTEM_NRF_ADDRESS);
     radio.stopListening();
 
