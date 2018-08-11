@@ -11,5 +11,6 @@
 ![stm32f103](./STM32F103C8T6_pinmap.gif)
 ![MPU9250](./MPU9250-sch.jpg)
 ![nrf24l01+](./nrf24l01+_pinmap.jpg)
+![nrf24l01+smd](./nrf24l01+_smd_pinmap.jpg)
 ![tp4056](./TP4056.jpg)
 ![AT24C02B](./AT24C02B.png)
