@@ -104,6 +104,16 @@ void setup()
     radio.stopListening();
 
     Serial1.println("start");
+
+// Flexible sensor
+////////////////////////////////////////////////////////////////////////////////
+#ifdef SYSTEM_FINGER
+    pinMode(FIR_FINGER,INPUT_ANALOG);
+    pinMode(SEC_FINGER,INPUT_ANALOG);
+    pinMode(THI_FINGER,INPUT_ANALOG);
+    pinMode(FOU_FINGER,INPUT_ANALOG);
+    pinMode(FIF_FINGER,INPUT_ANALOG);
+#endif
 }
 
 void loop()
@@ -117,6 +127,10 @@ void loop()
 
     int32_t lpf_acc[3] = {0};
     int32_t lpf_mag[3] = {0};
+
+#ifdef SYSTEM_FINGER
+    uint8_t step = 0;
+#endif
 
     for(;;)
     {
@@ -161,13 +175,38 @@ void loop()
         ekf.get_quat(q);
         
         int16_t data[6];
-
-        data[0] = q[0]*10000;
-        data[1] = q[1]*10000;
-        data[2] = q[2]*10000;
-        data[3] = q[3]*10000;
-        data[4] = (uint16_t)(delta_time/100);
-        data[5] = SYSTEM_NUMBER;
-        radio.write(data, 12);
+#ifdef SYSTEM_FINGER
+        if(step == 0)
+        {
+#endif
+            data[0] = q[0]*10000;
+            data[1] = q[1]*10000;
+            data[2] = q[2]*10000;
+            data[3] = q[3]*10000;
+            data[4] = (uint16_t)(delta_time/100);
+            data[5] = SYSTEM_NUMBER;
+#ifndef SYSTEM_FINGER
+            radio.write(data, 12);
+#else
+            if(radio.write(data,12))
+            {
+                step = 1;
+            }
+        }
+        else
+        {
+            data[0] = analogRead(FIR_FINGER);
+            data[1] = analogRead(SEC_FINGER);
+            data[2] = analogRead(THI_FINGER);
+            data[3] = analogRead(FOU_FINGER);
+            data[4] = analogRead(FIF_FINGER);
+            data[5] = 11;
+            if(radio.write(data,12))
+            {
+                step = 0;
+            }
+            
+        }
+#endif
     }
 }

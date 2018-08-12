@@ -65,6 +65,7 @@
 #if SYSTEM_NRF_ADDRESS == NRF_ADDRESS_01
     #define SYSTEM_NUMBER 1
     #define SYSTEM_NRF_CHANNEL NRF_CHANNEL_01
+    #define SYSTEM_FINGER
 #elif SYSTEM_NRF_ADDRESS == NRF_ADDRESS_02
     #define SYSTEM_NUMBER 2
     #define SYSTEM_NRF_CHANNEL NRF_CHANNEL_02
@@ -79,4 +80,11 @@
     #define SYSTEM_NRF_CHANNEL NRF_CHANNEL_05
 #endif
 
+#ifdef SYSTEM_FINGER
+    #define FIR_FINGER PB0
+    #define SEC_FINGER PA7
+    #define THI_FINGER PA6
+    #define FOU_FINGER PA5
+    #define FIF_FINGER PA4
+#endif
 #endif // _CONFIG_H_
