@@ -27,8 +27,11 @@
 #define NRF_CHANNEL_04 45
 #define NRF_CHANNEL_05 50
 
-RF24 radio[2]={ RF24(BOARD_NRF24_CE_PIN_01 ,BOARD_NRF24_CSN_PIN_01),
-                RF24(BOARD_NRF24_CE_PIN_02 ,BOARD_NRF24_CSN_PIN_02) };
+#define NRF_NUMBER 3
+
+RF24 radio[NRF_NUMBER] = {RF24(BOARD_NRF24_CE_PIN_01, BOARD_NRF24_CSN_PIN_01),
+                            RF24(BOARD_NRF24_CE_PIN_02, BOARD_NRF24_CSN_PIN_02),
+                            RF24(BOARD_NRF24_CE_PIN_03, BOARD_NRF24_CSN_PIN_03)};
 
 void print_ang(int16_t *data)
 {
@@ -79,23 +82,33 @@ void print_fin(int16_t *data)
 void setup()
 {
     Serial1.begin(115200);
-    Serial1.println("\n\rRF24/examples/GettingStarted/");
-
+    Serial1.println("\n\rRF24");
+    
     radio[0].begin();
     radio[0].setChannel(NRF_CHANNEL_01);
     radio[0].openReadingPipe(1,NRF_ADDRESS_01);
     radio[0].startListening();
-    
+    delay(1);
+
     radio[1].begin();
     radio[1].setChannel(NRF_CHANNEL_02);
     radio[1].openReadingPipe(1,NRF_ADDRESS_02);
     radio[1].startListening();
+    delay(1);
+
+    radio[2].begin();
+    radio[2].setChannel(NRF_CHANNEL_03);
+    radio[2].openReadingPipe(1,NRF_ADDRESS_03);
+    radio[2].startListening();
+    delay(1);
+
+    Serial1.println(NRF_NUMBER);
 }
 
 void loop()
 {
     int16_t _data[6];
-    for (uint8_t i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < NRF_NUMBER; ++i)
     {
         if(radio[i].available())
         {
@@ -109,7 +122,7 @@ void loop()
             {
                 print_fin(_data);
             }
-            else
+            else if(_data[5] > 0)
             {
                 print_ang(_data);
             }
