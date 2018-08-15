@@ -4,6 +4,7 @@
         "PLATFORMIO_CALLER": "vscode"
     },
     "files.associations": {
-        "spi.h": "c"
+        "spi.h": "c",
+        "cmath": "cpp"
     }
 }
