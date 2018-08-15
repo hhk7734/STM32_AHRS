@@ -5,33 +5,31 @@
 
 #define BOARD_NRF24_CE_PIN_01 PA8
 #define BOARD_NRF24_CE_PIN_02 PA15
-#define BOARD_NRF24_CE_PIN_03 PB3
+#define BOARD_NRF24_CE_PIN_03 PB1
 #define BOARD_NRF24_CE_PIN_04 PB4
 #define BOARD_NRF24_CE_PIN_05 PB5
 
 #define BOARD_NRF24_CSN_PIN_01 PB12
 #define BOARD_NRF24_CSN_PIN_02 PB6
-#define BOARD_NRF24_CSN_PIN_03 PB7
+#define BOARD_NRF24_CSN_PIN_03 PB0
 #define BOARD_NRF24_CSN_PIN_04 PB8
 #define BOARD_NRF24_CSN_PIN_05 PB9
 
-#define NRF_ADDRESS_01 0xF0F0F0F0A1ULL
-#define NRF_ADDRESS_02 0xF0F0F0F0B2ULL
-#define NRF_ADDRESS_03 0xF0F0F0F0C3ULL
-#define NRF_ADDRESS_04 0xF0F0F0F0D4ULL
-#define NRF_ADDRESS_05 0xF0F0F0F0E5ULL
+#define NRF_ADDRESS_01 0xF0F0F0F001ULL
+#define NRF_ADDRESS_02 0xF0F0F0F002ULL
+#define NRF_ADDRESS_03 0xF0F0F0F003ULL
+#define NRF_ADDRESS_04 0xF0F0F0F004ULL
+#define NRF_ADDRESS_05 0xF0F0F0F005ULL
 
-#define NRF_CHANNEL_01 30
-#define NRF_CHANNEL_02 35
-#define NRF_CHANNEL_03 40
-#define NRF_CHANNEL_04 45
-#define NRF_CHANNEL_05 50
+#define NRF_CHANNEL_01 66
+#define NRF_CHANNEL_02 70
+#define NRF_CHANNEL_03 74
+#define NRF_CHANNEL_04 78
+#define NRF_CHANNEL_05 82
 
-#define NRF_NUMBER 3
-
-RF24 radio[NRF_NUMBER] = {RF24(BOARD_NRF24_CE_PIN_01, BOARD_NRF24_CSN_PIN_01),
-                            RF24(BOARD_NRF24_CE_PIN_02, BOARD_NRF24_CSN_PIN_02),
-                            RF24(BOARD_NRF24_CE_PIN_03, BOARD_NRF24_CSN_PIN_03)};
+RF24 *radio_01 = new RF24(BOARD_NRF24_CE_PIN_01, BOARD_NRF24_CSN_PIN_01);
+RF24 *radio_02 = new RF24(BOARD_NRF24_CE_PIN_02, BOARD_NRF24_CSN_PIN_02);
+RF24 *radio_03 = new RF24(BOARD_NRF24_CE_PIN_03, BOARD_NRF24_CSN_PIN_03);
 
 void print_ang(int16_t *data)
 {
@@ -84,48 +82,83 @@ void setup()
     Serial1.begin(115200);
     Serial1.println("\n\rRF24");
     
-    radio[0].begin();
-    radio[0].setChannel(NRF_CHANNEL_01);
-    radio[0].openReadingPipe(1,NRF_ADDRESS_01);
-    radio[0].startListening();
+    radio_01->begin();
+    radio_01->setChannel(NRF_CHANNEL_01);
+    radio_01->openReadingPipe(1,NRF_ADDRESS_01);
+    radio_01->startListening();
     delay(1);
 
-    radio[1].begin();
-    radio[1].setChannel(NRF_CHANNEL_02);
-    radio[1].openReadingPipe(1,NRF_ADDRESS_02);
-    radio[1].startListening();
+    radio_02->begin();
+    radio_02->setChannel(NRF_CHANNEL_02);
+    radio_02->openReadingPipe(1,NRF_ADDRESS_02);
+    radio_02->startListening();
     delay(1);
 
-    radio[2].begin();
-    radio[2].setChannel(NRF_CHANNEL_03);
-    radio[2].openReadingPipe(1,NRF_ADDRESS_03);
-    radio[2].startListening();
+    radio_03->begin();
+    radio_03->setChannel(NRF_CHANNEL_03);
+    radio_03->openReadingPipe(1,NRF_ADDRESS_03);
+    radio_03->startListening();
     delay(1);
-
-    Serial1.println(NRF_NUMBER);
 }
 
 void loop()
 {
     int16_t _data[6];
-    for (uint8_t i = 0; i < NRF_NUMBER; ++i)
+
+    if(radio_01->available())
     {
-        if(radio[i].available())
+        bool done = false;
+        while (!done)
         {
-            bool done = false;
-            while (!done)
-            {
-                done = radio[i].read( _data, 12 );
-                delayMicroseconds(200);
-            }
-            if(_data[5] == 11)
-            {
-                print_fin(_data);
-            }
-            else if(_data[5] > 0)
-            {
-                print_ang(_data);
-            }
+            done = radio_01->read( _data, 12 );
+            delayMicroseconds(200);
+        }
+        if(_data[5] == 11)
+        {
+            print_fin(_data);
+        }
+        else if(_data[5] > 0)
+        {
+            print_ang(_data);
         }
     }
+    delayMicroseconds(200);
+
+    if(radio_02->available())
+    {
+        bool done = false;
+        while (!done)
+        {
+            done = radio_02->read( _data, 12 );
+            delayMicroseconds(200);
+        }
+        if(_data[5] == 11)
+        {
+            print_fin(_data);
+        }
+        else if(_data[5] > 0)
+        {
+            print_ang(_data);
+        }
+    }
+    delayMicroseconds(200);
+
+    if(radio_03->available())
+    {
+        bool done = false;
+        while (!done)
+        {
+            done = radio_03->read( _data, 12 );
+            delayMicroseconds(200);
+        }
+        if(_data[5] == 11)
+        {
+            print_fin(_data);
+        }
+        else if(_data[5] > 0)
+        {
+            print_ang(_data);
+        }
+    }
+    delayMicroseconds(200);
 }
