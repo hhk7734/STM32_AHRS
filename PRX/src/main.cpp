@@ -49,19 +49,27 @@
 #define NRF_CHANNEL_04 78
 #define NRF_CHANNEL_05 82
 
+#define NRF_READ_DELAY 100
+#define NRF_READ_INTERVAL 100
+
+#define ANG_TEST
+#define CALCULATE_ARM
+
 RF24 *radio_01 = new RF24(BOARD_NRF24_CE_PIN_01, BOARD_NRF24_CSN_PIN_01);
 RF24 *radio_02 = new RF24(BOARD_NRF24_CE_PIN_02, BOARD_NRF24_CSN_PIN_02);
 RF24 *radio_03 = new RF24(BOARD_NRF24_CE_PIN_03, BOARD_NRF24_CSN_PIN_03);
 RF24 *radio_04 = new RF24(BOARD_NRF24_CE_PIN_04, BOARD_NRF24_CSN_PIN_04);
 
+int16_t _data[5][6];
+
 void print_ang(int16_t *data)
 {
+#ifdef ANG_TEST
     float ang[3], q[4];
     for (uint8_t i = 0; i < 4; ++i)
     {
         q[i] = float(data[i])/10000.0;
     }
-
     ang[0] = atan2( 2*(q[1]*q[2]+q[0]*q[3]) , 1-2*(q[0]*q[0]+q[1]*q[1]) ) * 57.2975;
     ang[1] = asin ( 2*(q[1]*q[3]-q[0]*q[2]) ) * 57.2975;
     ang[2] = atan2( 2*(q[0]*q[1]+q[2]*q[3]) , 1-2*(q[1]*q[1]+q[2]*q[2]) ) * 57.2975;
@@ -83,21 +91,110 @@ void print_ang(int16_t *data)
     Serial1.print(data[4]);
     Serial1.print(',');
     Serial1.println(data[5]);
+#else
+    Serial1.print(data[0]);
+    Serial1.print(',');
+    Serial1.print(data[1]);
+    Serial1.print(',');
+    Serial1.print(data[2]);
+    Serial1.print(',');
+    Serial1.print(data[3]);
+    Serial1.print(',');
+    // Serial1.print(data[4]);
+    // Serial1.print(',');
+    Serial1.println(data[5]);
+#endif // ANG_TEST
 }
 
 void print_fin(int16_t *data)
 {
-    Serial1.print(data[0]>>7);
+    Serial1.print(data[0]>>6);
     Serial1.print(',');
-    Serial1.print(data[1]>>7);
+    Serial1.print(data[1]>>6);
     Serial1.print(',');
-    Serial1.print(data[2]>>7);
+    Serial1.print(data[2]>>6);
     Serial1.print(',');
-    Serial1.print(data[3]>>7);
+    Serial1.print(data[3]>>6);
     Serial1.print(',');
-    Serial1.print(data[4]>>7);
+    Serial1.print(data[4]>>6);
     Serial1.print(',');
     Serial1.println(data[5]);
+}
+
+void read_nrf(void)
+{
+    if(radio_01->available())
+    {
+        bool done = false;
+        while (!done)
+        {
+            done = radio_01->read( _data[0], 12 );
+            delayMicroseconds(NRF_READ_DELAY);
+        }
+#ifndef CALCULATE_ARM
+        print_ang(_data[0]);
+#endif // CALCULATE_ARM
+    }
+    delayMicroseconds(NRF_READ_INTERVAL);
+
+
+    if(radio_02->available())
+    {
+        bool done = false;
+        while (!done)
+        {
+            done = radio_02->read( _data[1], 12 );
+            delayMicroseconds(NRF_READ_DELAY);
+        }
+#ifndef CALCULATE_ARM
+        print_ang(_data[1]);
+#endif // CALCULATE_ARM
+    }
+    delayMicroseconds(NRF_READ_INTERVAL);
+
+
+    if(radio_03->available())
+    {
+        bool done = false;
+        while (!done)
+        {
+            done = radio_03->read( _data[2], 12 );
+            delayMicroseconds(NRF_READ_DELAY);
+        }
+#ifndef CALCULATE_ARM
+        print_ang(_data[2]);
+#endif // CALCULATE_ARM
+    }
+    delayMicroseconds(NRF_READ_INTERVAL);
+
+
+    if(radio_04->available())
+    {
+        bool done = false;
+        while (!done)
+        {
+            done = radio_04->read( _data[3], 12 );
+            delayMicroseconds(NRF_READ_DELAY);
+        }
+
+        if(_data[3][5] == 11)
+        {
+            for (uint8_t i = 0; i < 6; ++i)
+            {
+                _data[4][i] = _data[3][i];
+            }
+#ifndef CALCULATE_ARM
+            print_fin(_data[4]);
+#endif // CALCULATE_ARM
+        }
+        else
+        {
+#ifndef CALCULATE_ARM
+            print_ang(_data[3]);
+#endif // CALCULATE_ARM
+        }
+    }
+    delayMicroseconds(NRF_READ_INTERVAL);
 }
 
 void setup()
@@ -132,63 +229,8 @@ void setup()
 
 void loop()
 {
-    int16_t _data[6];
+    read_nrf();
+#ifdef CALCULATE_ARM
 
-    if(radio_01->available())
-    {
-        bool done = false;
-        while (!done)
-        {
-            done = radio_01->read( _data, 12 );
-            delayMicroseconds(200);
-        }
-        
-        print_ang(_data);
-    }
-    delayMicroseconds(100);
-
-    if(radio_02->available())
-    {
-        bool done = false;
-        while (!done)
-        {
-            done = radio_02->read( _data, 12 );
-            delayMicroseconds(200);
-        }
-        
-        print_ang(_data);
-    }
-    delayMicroseconds(100);
-
-    if(radio_03->available())
-    {
-        bool done = false;
-        while (!done)
-        {
-            done = radio_03->read( _data, 12 );
-            delayMicroseconds(200);
-        }
-
-        print_ang(_data);
-    }
-    delayMicroseconds(100);
-    
-    if(radio_04->available())
-    {
-        bool done = false;
-        while (!done)
-        {
-            done = radio_04->read( _data, 12 );
-            delayMicroseconds(200);
-        }
-        if(_data[5] == 11)
-        {
-            print_fin(_data);
-        }
-        else
-        {
-            print_ang(_data);
-        }
-    }
-    delayMicroseconds(100);
+#endif // CALCULATE_ARM
 }
