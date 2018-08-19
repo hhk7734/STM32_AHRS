@@ -6,5 +6,9 @@
     "files.associations": {
         "spi.h": "c",
         "cmath": "cpp"
+    },
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/hhk7734/.platformio/penv/bin:/Users/hhk7734/.platformio/penv:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "PLATFORMIO_CALLER": "vscode"
     }
 }
