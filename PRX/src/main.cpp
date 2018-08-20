@@ -77,7 +77,7 @@ void print_ang(int16_t *data)
     float ang[3], q[4];
     for (uint8_t i = 0; i < 4; ++i)
     {
-        q[i] = float(data[i]) / 10000.0;
+        q[i] = float(data[i]) / 20000.0;
     }
     ang[0] = atan2(2 * (q[1] * q[2] + q[0] * q[3]), 1 - 2 * (q[0] * q[0] + q[1] * q[1])) * 57.2975;
     ang[1] = asin(2 * (q[1] * q[3] - q[0] * q[2])) * 57.2975;
@@ -242,7 +242,7 @@ void loop()
         for (uint8_t j = 0; j < 4; ++j)
         {
             _q[i][j] = _data[i][j];
-            _q[i][j] /= 10000;
+            _q[i][j] /= 20000.0;
         }
     }
     switch (step)

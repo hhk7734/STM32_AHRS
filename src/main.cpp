@@ -179,10 +179,10 @@ void loop()
         if(step == 0)
         {
 #endif
-            data[0] = q[0]*10000;
-            data[1] = q[1]*10000;
-            data[2] = q[2]*10000;
-            data[3] = q[3]*10000;
+            data[0] = q[0]*20000;
+            data[1] = q[1]*20000;
+            data[2] = q[2]*20000;
+            data[3] = q[3]*20000;
             data[4] = (uint16_t)(delta_time/100);
             data[5] = SYSTEM_NUMBER;
 #ifndef SYSTEM_FINGER
