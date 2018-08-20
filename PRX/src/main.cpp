@@ -251,18 +251,19 @@ void loop()
         c_quat[0] = 2 * _q[0][QX] * _q[0][QY] - 2 * _q[0][QW] * _q[0][QZ];
         c_quat[1] = 2 * _q[0][QW] * _q[0][QY] + 2 * _q[0][QX] * _q[0][QZ];
 
-        Serial1.print((int16_t)(atan2(c_quat[0], c_quat[1]) * 10000));
+        Serial1.print((int16_t)(atan2(c_quat[0], c_quat[1]) * 1000));
         Serial1.print(',');
 
         ++step;
         break;
+
     case 6:
 
         c_quat[2] = -(2 * _q[0][QY] * _q[0][QY] + 2 * _q[0][QZ] * _q[0][QZ] - 1) * (2 * _q[1][QY] * _q[1][QY] + 2 * _q[1][QZ] * _q[1][QZ] - 1) - (2 * _q[0][QW] * _q[0][QY] - 2 * _q[0][QX] * _q[0][QZ]) * (2 * _q[1][QW] * _q[1][QY] - 2 * _q[1][QX] * _q[1][QZ]) - (2 * _q[0][QW] * _q[0][QZ] + 2 * _q[0][QX] * _q[0][QY]) * (2 * _q[1][QW] * _q[1][QZ] + 2 * _q[1][QX] * _q[1][QY]);
 
         c_quat[3] = (2 * _q[0][QW] * _q[0][QY] + 2 * _q[0][QX] * _q[0][QZ]) * (2 * _q[1][QY] * _q[1][QY] + 2 * _q[1][QZ] * _q[1][QZ] - 1) - (2 * _q[1][QW] * _q[1][QY] - 2 * _q[1][QX] * _q[1][QZ]) * (2 * _q[0][QX] * _q[0][QX] + 2 * _q[0][QY] * _q[0][QY] - 1) + (2 * _q[0][QW] * _q[0][QX] - 2 * _q[0][QY] * _q[0][QZ]) * (2 * _q[1][QW] * _q[1][QZ] + 2 * _q[1][QX] * _q[1][QY]);
 
-        Serial1.print((int16_t)(atan2(c_quat[2], c_quat[3]) * 10000));
+        Serial1.print((int16_t)(atan2(c_quat[2], c_quat[3]) * 1000));
         Serial1.print(',');
 
         ++step;
@@ -271,7 +272,7 @@ void loop()
     case 12:
         c_quat[4] = (2 * _q[0][QW] * _q[0][QZ] - 2 * _q[0][QX] * _q[0][QY]) * (2 * _q[1][QY] * _q[1][QY] + 2 * _q[1][QZ] * _q[1][QZ] - 1) - (2 * _q[1][QW] * _q[1][QZ] + 2 * _q[1][QX] * _q[1][QY]) * (2 * _q[0][QX] * _q[0][QX] + 2 * _q[0][QZ] * _q[0][QZ] - 1) - (2 * _q[0][QW] * _q[0][QX] + 2 * _q[0][QY] * _q[0][QZ]) * (2 * _q[1][QW] * _q[1][QY] - 2 * _q[1][QX] * _q[1][QZ]);
 
-        Serial1.print((int16_t)(acos(c_quat[4]) * 10000));
+        Serial1.print((int16_t)(acos(c_quat[4]) * 1000));
         Serial1.print(',');
 
         ++step;
@@ -283,7 +284,7 @@ void loop()
 
         c_quat[6] = (2 * _q[1][QW] * _q[1][QX] - 2 * _q[1][QY] * _q[1][QZ]) * (2 * _q[0][QX] * _q[0][QX] + 2 * _q[0][QZ] * _q[0][QZ] - 1) - (2 * _q[0][QW] * _q[0][QX] + 2 * _q[0][QY] * _q[0][QZ]) * (2 * _q[1][QX] * _q[1][QX] + 2 * _q[1][QY] * _q[1][QY] - 1) - (2 * _q[0][QW] * _q[0][QZ] - 2 * _q[0][QX] * _q[0][QY]) * (2 * _q[1][QW] * _q[1][QY] + 2 * _q[1][QX] * _q[1][QZ]);
 
-        Serial1.print((int16_t)(atan2(c_quat[5], c_quat[6]) * 10000));
+        Serial1.print((int16_t)(atan2(c_quat[5], c_quat[6]) * 1000));
         Serial1.print(',');
 
         ++step;
@@ -294,7 +295,7 @@ void loop()
 
         c_quat[8] = (2 * _q[1][QX] * _q[1][QX] + 2 * _q[1][QY] * _q[1][QY] - 1) * (2 * _q[2][QX] * _q[2][QX] + 2 * _q[2][QY] * _q[2][QY] - 1) + (2 * _q[1][QW] * _q[1][QX] - 2 * _q[1][QY] * _q[1][QZ]) * (2 * _q[2][QW] * _q[2][QX] - 2 * _q[2][QY] * _q[2][QZ]) + (2 * _q[1][QW] * _q[1][QY] + 2 * _q[1][QX] * _q[1][QZ]) * (2 * _q[2][QW] * _q[2][QY] + 2 * _q[2][QX] * _q[2][QZ]);
 
-        Serial1.print((int16_t)(atan2(c_quat[7], c_quat[8]) * 10000));
+        Serial1.print((int16_t)(atan2(c_quat[7], c_quat[8]) * 1000));
         Serial1.print(',');
 
         ++step;
@@ -305,7 +306,7 @@ void loop()
 
         c_quat[10] = (2 * _q[2][QX] * _q[2][QX] + 2 * _q[2][QZ] * _q[2][QZ] - 1) * (2 * _q[3][QX] * _q[3][QX] + 2 * _q[3][QZ] * _q[3][QZ] - 1) + (2 * _q[2][QW] * _q[2][QX] + 2 * _q[2][QY] * _q[2][QZ]) * (2 * _q[3][QW] * _q[3][QX] + 2 * _q[3][QY] * _q[3][QZ]) + (2 * _q[2][QW] * _q[2][QZ] - 2 * _q[2][QX] * _q[2][QY]) * (2 * _q[3][QW] * _q[3][QZ] - 2 * _q[3][QX] * _q[3][QY]);
 
-        Serial1.print((int16_t)(atan2(c_quat[9], c_quat[10]) * 10000));
+        Serial1.print((int16_t)(atan2(c_quat[9], c_quat[10]) * 1000));
         Serial1.print(',');
 
         ++step;
@@ -316,11 +317,12 @@ void loop()
 
         c_quat[12] = (2 * _q[3][QW] * _q[3][QY] + 2 * _q[3][QX] * _q[3][QZ]) * (2 * _q[2][QY] * _q[2][QY] + 2 * _q[2][QZ] * _q[2][QZ] - 1) - (2 * _q[2][QW] * _q[2][QY] - 2 * _q[2][QX] * _q[2][QZ]) * (2 * _q[3][QX] * _q[3][QX] + 2 * _q[3][QY] * _q[3][QY] - 1) + (2 * _q[2][QW] * _q[2][QZ] + 2 * _q[2][QX] * _q[2][QY]) * (2 * _q[3][QW] * _q[3][QX] - 2 * _q[3][QY] * _q[3][QZ]);
 
-        Serial1.print((int16_t)(atan2(c_quat[11], c_quat[12]) * 10000));
+        Serial1.print((int16_t)(atan2(c_quat[11], c_quat[12]) * 1000));
         Serial1.print(',');
 
         ++step;
         break;
+
     case 42:
         for (uint8_t i = 0; i < 4; ++i)
         {
