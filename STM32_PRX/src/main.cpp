@@ -199,6 +199,27 @@ void read_nrf(void)
 }
 
 #ifdef CALCULATE_ARM
+
+void ang_constrain(int16_t new_ang, int16_t *old_ang)
+{
+    if (new_ang - *old_ang > 3141)
+    {
+        new_ang -= 6282;
+        *old_ang = constrain(new_ang, *old_ang - MAX_ERROR, *old_ang + MAX_ERROR);
+        if (*old_ang < -3141)
+            *old_ang += 6282;
+    }
+    else if (new_ang - *old_ang < -3141)
+    {
+        new_ang += 6282;
+        *old_ang = constrain(new_ang, *old_ang - MAX_ERROR, *old_ang + MAX_ERROR);
+        if (*old_ang > 3141)
+            *old_ang -= 6282;
+    }
+    else
+        *old_ang = constrain(new_ang, *old_ang - MAX_ERROR, *old_ang + MAX_ERROR);
+}
+
 void print_arm_ang(void)
 {
     double _q[4][4];
@@ -220,7 +241,7 @@ void print_arm_ang(void)
         c_quat[1] = 2 * _q[0][QW] * _q[0][QY] + 2 * _q[0][QX] * _q[0][QZ];
 
         ang_temp = atan2(c_quat[0], c_quat[1]) * 1000;
-        arm_angle[0] = constrain(ang_temp, arm_angle[0] - MAX_ERROR, arm_angle[0] + MAX_ERROR);
+        ang_constrain(ang_temp, &arm_angle[0]);
 
         Serial1.print(arm_angle[0]);
         Serial1.print(',');
@@ -235,7 +256,7 @@ void print_arm_ang(void)
         c_quat[3] = (2 * _q[0][QW] * _q[0][QY] + 2 * _q[0][QX] * _q[0][QZ]) * (2 * _q[1][QY] * _q[1][QY] + 2 * _q[1][QZ] * _q[1][QZ] - 1) - (2 * _q[1][QW] * _q[1][QY] - 2 * _q[1][QX] * _q[1][QZ]) * (2 * _q[0][QX] * _q[0][QX] + 2 * _q[0][QY] * _q[0][QY] - 1) + (2 * _q[0][QW] * _q[0][QX] - 2 * _q[0][QY] * _q[0][QZ]) * (2 * _q[1][QW] * _q[1][QZ] + 2 * _q[1][QX] * _q[1][QY]);
 
         ang_temp = atan2(c_quat[2], c_quat[3]) * 1000;
-        arm_angle[1] = constrain(ang_temp, arm_angle[1] - MAX_ERROR, arm_angle[1] + MAX_ERROR);
+        ang_constrain(ang_temp, &arm_angle[1]);
 
         Serial1.print(arm_angle[1]);
         Serial1.print(',');
@@ -262,7 +283,7 @@ void print_arm_ang(void)
         c_quat[6] = (2 * _q[1][QW] * _q[1][QX] - 2 * _q[1][QY] * _q[1][QZ]) * (2 * _q[0][QX] * _q[0][QX] + 2 * _q[0][QZ] * _q[0][QZ] - 1) - (2 * _q[0][QW] * _q[0][QX] + 2 * _q[0][QY] * _q[0][QZ]) * (2 * _q[1][QX] * _q[1][QX] + 2 * _q[1][QY] * _q[1][QY] - 1) - (2 * _q[0][QW] * _q[0][QZ] - 2 * _q[0][QX] * _q[0][QY]) * (2 * _q[1][QW] * _q[1][QY] + 2 * _q[1][QX] * _q[1][QZ]);
 
         ang_temp = atan2(c_quat[5], c_quat[6]) * 1000;
-        arm_angle[3] = constrain(ang_temp, arm_angle[3] - MAX_ERROR, arm_angle[3] + MAX_ERROR);
+        ang_constrain(ang_temp, &arm_angle[3]);
 
         Serial1.print(arm_angle[3]);
         Serial1.print(',');
@@ -276,7 +297,7 @@ void print_arm_ang(void)
         c_quat[8] = (2 * _q[1][QX] * _q[1][QX] + 2 * _q[1][QY] * _q[1][QY] - 1) * (2 * _q[2][QX] * _q[2][QX] + 2 * _q[2][QY] * _q[2][QY] - 1) + (2 * _q[1][QW] * _q[1][QX] - 2 * _q[1][QY] * _q[1][QZ]) * (2 * _q[2][QW] * _q[2][QX] - 2 * _q[2][QY] * _q[2][QZ]) + (2 * _q[1][QW] * _q[1][QY] + 2 * _q[1][QX] * _q[1][QZ]) * (2 * _q[2][QW] * _q[2][QY] + 2 * _q[2][QX] * _q[2][QZ]);
 
         ang_temp = atan2(c_quat[7], c_quat[8]) * 1000;
-        arm_angle[4] = constrain(ang_temp, arm_angle[4] - MAX_ERROR, arm_angle[4] + MAX_ERROR);
+        ang_constrain(ang_temp, &arm_angle[4]);
 
         Serial1.print(arm_angle[4]);
         Serial1.print(',');
@@ -290,7 +311,7 @@ void print_arm_ang(void)
         c_quat[10] = (2 * _q[2][QX] * _q[2][QX] + 2 * _q[2][QZ] * _q[2][QZ] - 1) * (2 * _q[3][QX] * _q[3][QX] + 2 * _q[3][QZ] * _q[3][QZ] - 1) + (2 * _q[2][QW] * _q[2][QX] + 2 * _q[2][QY] * _q[2][QZ]) * (2 * _q[3][QW] * _q[3][QX] + 2 * _q[3][QY] * _q[3][QZ]) + (2 * _q[2][QW] * _q[2][QZ] - 2 * _q[2][QX] * _q[2][QY]) * (2 * _q[3][QW] * _q[3][QZ] - 2 * _q[3][QX] * _q[3][QY]);
 
         ang_temp = atan2(c_quat[9], c_quat[10]) * 1000;
-        arm_angle[5] = constrain(ang_temp, arm_angle[5] - MAX_ERROR, arm_angle[5] + MAX_ERROR);
+        ang_constrain(ang_temp, &arm_angle[5]);
 
         Serial1.print(arm_angle[5]);
         Serial1.print(',');
@@ -304,7 +325,7 @@ void print_arm_ang(void)
         c_quat[12] = (2 * _q[3][QW] * _q[3][QY] + 2 * _q[3][QX] * _q[3][QZ]) * (2 * _q[2][QY] * _q[2][QY] + 2 * _q[2][QZ] * _q[2][QZ] - 1) - (2 * _q[2][QW] * _q[2][QY] - 2 * _q[2][QX] * _q[2][QZ]) * (2 * _q[3][QX] * _q[3][QX] + 2 * _q[3][QY] * _q[3][QY] - 1) + (2 * _q[2][QW] * _q[2][QZ] + 2 * _q[2][QX] * _q[2][QY]) * (2 * _q[3][QW] * _q[3][QX] - 2 * _q[3][QY] * _q[3][QZ]);
 
         ang_temp = atan2(c_quat[11], c_quat[12]) * 1000;
-        arm_angle[6] = constrain(ang_temp, arm_angle[6] - MAX_ERROR, arm_angle[6] + MAX_ERROR);
+        ang_constrain(ang_temp, &arm_angle[6]);
 
         Serial1.print(arm_angle[6]);
         Serial1.print(',');
