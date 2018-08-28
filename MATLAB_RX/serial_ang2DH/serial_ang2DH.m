@@ -6,7 +6,7 @@ start_stop_button
 global start_stop_state close_state serial_state
 
 % serial state
-serial_num = 3;
+serial_num = 7;
 
 %init string to num
 max_num_data = 20;
@@ -26,7 +26,7 @@ y = zeros(8,1);
 z = zeros(8,1);
 graph = plot3(x,y,z,'LineWidth',6);
 axis([-20 20 -20 20 -25 25])
-
+grid on;
 
 while close_state == 0
     % wait for pushing start button
@@ -91,7 +91,7 @@ while close_state == 0
         end
         
         theta * 57.3
-        temp(8:12)
+%         temp(8:12)
         
         % DH parameter graph
         d = [2 -2 0 10 0 -10 0];
