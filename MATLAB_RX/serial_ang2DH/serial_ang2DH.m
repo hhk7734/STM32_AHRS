@@ -25,7 +25,7 @@ x = zeros(8,1);
 y = zeros(8,1);
 z = zeros(8,1);
 graph = plot3(x,y,z,'LineWidth',6);
-axis([-20 20 -20 20 -25 25])
+axis([-25 25 -25 25 -25 25])
 grid on;
 
 while close_state == 0
